@@ -48,6 +48,22 @@ class Node
     @position.hash
   end
 
+  def resolve_s!(nodes)
+    if @pipe == 'S'
+      ['|', '-', 'L', 'J', '7', 'F'].each do |pipe|
+        edges = to_edges(pipe)
+        puts edges
+        c = nodes.filter do |n|
+          edges.include?(n.position)
+        end.count
+        if c == 2
+          @pipe == pipe
+          return
+        end
+      end
+    end
+  end
+
   private
 
   def to_edges(pipe)
@@ -104,7 +120,7 @@ end
 def longest_loop_from_file(file_path)
   starting_node = nil
   nodes = {}
-  File.readlines('input').each_with_index do |row, x|
+  File.readlines(file_path).each_with_index do |row, x|
     row.strip.split('').each_with_index do |char, y|
       position = Position.new(x, y)
       node = Node.new(position, char)
@@ -121,7 +137,8 @@ def longest_loop_from_file(file_path)
       find_loop(nodes[edge], starting_node, nodes, [])
     end
   end.filter { |n| !n.nil? }
-  paths.sort_by { |path| path.size }.reverse[0]
+  [nodes, paths.sort_by { |path| path.size }.reverse[0]]
 end
 
-puts (longest_loop_from_file('input') / 2.0).ceil
+#_, longest_loop = longest_loop_from_file('input')
+#puts (longest_loop.size / 2.0).ceil
